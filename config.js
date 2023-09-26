@@ -30,7 +30,7 @@ const config = {
         },
         
             
-        PORTNO : 8000,
+        // PORTNO : 8000,
         
     },
 }
