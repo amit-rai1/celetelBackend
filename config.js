@@ -12,14 +12,14 @@ const config = {
             UserName: "",
             Password: ""
         },
-        PORTNO : 9800,
+        PORT : 9800,
        
     },
 
     staging: {
         DB:{
             // HOST: "13.235.133.243 ",
-            HOST: "127.0.0.1",
+            HOST: "0.0.0.0",
 
             PORT: "27017",
             DATABASE: "amitrai",
