@@ -12,25 +12,21 @@ const config = {
             UserName: "",
             Password: ""
         },
-        PORT : 9800,
+        PORTNO : 9800,
        
     },
 
     staging: {
         DB:{
-            // HOST: "13.235.133.243 ",
-            HOST: "0.0.0.0",
-
+            HOST: "13.235.133.243 ",
             PORT: "27017",
             DATABASE: "amitrai",
             MONGOOSE:{
                 useUndifinedTopology: true,
                 useNewUrlParser: true
             },
-            // UserName: "Ibizo",
-            // Password: "4dokany9XdfIlwSG"
-            UserName: "",
-            Password: ""
+            UserName: "Ibizo",
+            Password: "4dokany9XdfIlwSG"
         },
         
             

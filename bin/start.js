@@ -37,7 +37,7 @@ const configvalue = config.get(process.env.Node_env);
 
 console.log(configvalue, "configvalue");
 
-const port = configvalue.PORT ; // Defaulting to 3000 if PORT is not set in config
+const port = configvalue.PORT || 3000; // Defaulting to 3000 if PORT is not set in config
 
 console.log(port, "port");
 
