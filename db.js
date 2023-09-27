@@ -36,7 +36,8 @@ var options = {
     pass: DB.Password,
 }
 
-const MONGOURI= `mongodb+srv://Ibizo:4dokany9XdfIlwSG@cluster0.1osvxxb.mongodb.net/?retryWrites=true&w=majority`
+// const MONGOURI= `mongodb+srv://Ibizo:4dokany9XdfIlwSG@cluster0.1osvxxb.mongodb.net/?retryWrites=true&w=majority`
+const MONGOURI= `mongodb://${DB.HOST}:${DB.PORT}/${DB.DATABASE}`
 
 console.log(MONGOURI,"MONGOURI")
 
