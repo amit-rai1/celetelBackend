@@ -18,15 +18,19 @@ const config = {
 
     staging: {
         DB:{
-            HOST: "13.235.133.243 ",
+            // HOST: "13.235.133.243 ",
+            HOST: "127.0.0.1",
+
             PORT: "27017",
             DATABASE: "amitrai",
             MONGOOSE:{
                 useUndifinedTopology: true,
                 useNewUrlParser: true
             },
-            UserName: "Ibizo",
-            Password: "4dokany9XdfIlwSG"
+            // UserName: "Ibizo",
+            // Password: "4dokany9XdfIlwSG"
+            UserName: "",
+            Password: ""
         },
         
             
