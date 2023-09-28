@@ -22,6 +22,8 @@ function generateRandomPassword() {
 }
 
 export const createUser = async (req, res) => {
+
+  console.log("enter");
   try {
     const generatedPassword = generateRandomPassword(); // Generate an 8-character random password
 
@@ -37,6 +39,7 @@ export const createUser = async (req, res) => {
 
     const result = await newdata.save();
     if (result) {
+      console.log(result,"result");
       res.send({
         status: true,
         statusCode: 200,

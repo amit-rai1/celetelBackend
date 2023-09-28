@@ -1,5 +1,6 @@
 import express from 'express';
-import { createUser, deleteUsers, getUserList, loginUser} from '../controller/user.js';
+// import { createUser, deleteUsers, getUserList, loginUser} from '../controller/user.js';
+import {createUser, loginUser,getUserList,deleteUsers} from '../controller/user'
 import { verifyToken } from '../middleware/verifyToken.js';
 // import {checkEmail} from '../middleware/checkEmail'
 // import { verifyToken } from '../middleware/verifyToken.js';

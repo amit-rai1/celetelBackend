@@ -10,8 +10,11 @@ import user from "../model/user";
 import DistributedData from "../model/DistributedData";
 
 export const registerAdmin = async (req, res) => {
+  console.log("enter");
   try {
     const { email, password, role } = req.body;
+
+    console.log(req.body,"req.body");
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
