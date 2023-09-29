@@ -12,12 +12,14 @@ const config = require('../config')
 // console.log(process.env.Node_env);
 const configvalue = config.get(process.env.Node_env);
 
-const port = configvalue.PORTNO;
+// const port = configvalue.PORTNO;
+const PORT = configvalue.PORTNO; // Using the PORTNO defined in your config file
 
-server.listen(port);
+
+server.listen(PORT);
 
 server.on('listening', ()=> {
-   console.log(`Listening on ${port}`);
+   console.log(`Listening on ${PORT}`);
 });
 // 'use Strict';
 

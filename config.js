@@ -54,15 +54,15 @@ const config = {
 
     staging: {
         DB:{
-            HOST: "172.10.1.3",
+            HOST: "0.0.0.0",
             PORT: "27017",
-            DATABASE: "amitrai",
+            DATABASE: "test",
             MONGOOSE:{
                 useUndifinedTopology: true,
                 useNewUrlParser: true
             },
-            UserName: "amitrai",
-            Password: "amitrai33"
+            UserName: "Ibizo",
+            Password: "4dokany9XdfIlwSG"
         },
         
             
