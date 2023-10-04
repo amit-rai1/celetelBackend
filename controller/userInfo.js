@@ -105,13 +105,136 @@ export const getUserDataByUserId = async (req, res) => {
 };
 
 // phse 2 dev***************//
-let usedData = 0; 
-let usedDataArray = [];
-let unusedDataArray = [];
+// let usedData = 0; 
+// let usedDataArray = [];
+// let unusedDataArray = [];
+
+// export const getDistributedData = async (req, res) => {
+//   try {
+//     unusedDataArray = [];  
+//     const userData = await userInfo.find({});
+//     const totalData = userData.length;
+
+//     const numUsers = parseInt(req.body.numUsers);
+//     const desiredData = parseInt(req.body.desiredData);
+
+//     if (isNaN(numUsers) || isNaN(desiredData) || numUsers <= 0 || desiredData <= 0) {
+//       return res.send({ status: 400, success: false, msg: 'Invalid numUsers or desiredCount value' });
+//     }
+
+//     if (desiredData > totalData) {
+//       return res.send({ status: 400, success: false, msg: 'desiredData exceeds total count' });
+//     }
+
+//     const entriesPerUser = Math.floor(desiredData / numUsers);
+
+//     if (entriesPerUser === 0) {
+//       return res.send({ status: 400, success: false, msg: 'Not enough data to distribute equally' });
+//     }
+
+//     const User = await user.find({});
+
+//     if (User.length < numUsers) {
+//       return res.send({ status: 400, success: false, msg: 'Not enough users to distribute data' });
+//     }
+
+//     let userDataIndex = usedData; 
+//     let distributedData = [];
+
+//     for (let i = 0; i < numUsers; i++) {
+//       let userEntries = [];
+
+//       for (let j = 0; j < entriesPerUser; j++) {
+//         if (userDataIndex < totalData) {
+//           userEntries.push({
+//             firstname: userData[userDataIndex]._doc.firstname,
+//             lastname: userData[userDataIndex]._doc.lastname,
+//             Address: userData[userDataIndex]._doc.Address,
+//             State: userData[userDataIndex]._doc.State,
+//             City: userData[userDataIndex]._doc.City,
+//             Homephone: userData[userDataIndex]._doc.Homephone,
+//             Email: userData[userDataIndex]._doc.Email,
+//             Zip: userData[userDataIndex]._doc.Zip,
+//             Dateofbirth: userData[userDataIndex]._doc.Dateofbirth
+//           });
+
+//           usedDataArray.push(userData[userDataIndex]._doc);
+//           userDataIndex++;
+//         }
+//       }
+
+//       usedData += userEntries.length;
+
+//       distributedData.push({ user: User[i], data: userEntries });
+
+//       if (userDataIndex >= totalData) break;
+
+//       const distributedDataEntry = new DistributedData({ user: User[i], data: userEntries });
+//       await distributedDataEntry.save();
+//     }
+
+//     // Calculate unusedData based on usedData from previous distributions
+//     let unusedData = totalData - usedData;
+
+//     for (let i = usedData; i < totalData; i++) {
+//       unusedDataArray.push({
+//         firstname: userData[i]._doc.firstname,
+//         lastname: userData[i]._doc.lastname,
+//         Address: userData[i]._doc.Address,
+//         State: userData[i]._doc.State,
+//         City: userData[i]._doc.City,
+//         Homephone: userData[i]._doc.Homephone,
+//         Email: userData[i]._doc.Email,
+//         Zip: userData[i]._doc.Zip,
+//         Dateofbirth: userData[i]._doc.Dateofbirth
+//       });
+//     }
+
+
+
+//     // Save usedDataArray and unusedDataArray to the database
+//     const dataDistributedEntry = new DistributedData({
+//       usedData: usedDataArray,
+//       unusedData: unusedDataArray
+//     });
+//     await dataDistributedEntry.save();
+
+//     const dataDistributed = new DistributedData({
+//       usedData,
+//       unusedData,
+//       usedDataArray, 
+//       unusedDataArray
+//     });
+//     await dataDistributed.save();
+
+//     await userInfo.updateOne({}, { usedData, unusedData });
+
+
+//     res.send({
+//       status: 200,
+//       success: true,
+//       msg: 'Data distributed successfully',
+//       totalData,
+//       numUsers,
+//       desiredData,
+//       entriesPerUser,
+//       distributedData,
+//       usedData,
+//       unusedData
+//     });
+
+//   } catch (error) {
+//     console.error(error);
+//     res.send({ status: 400, success: false, msg: error.message });
+//   }
+// };
+
+
+
+// Assuming 'userInfo' is the model name, if not, please replace it with the correct model name.
 
 export const getDistributedData = async (req, res) => {
   try {
-    unusedDataArray = [];  
     const userData = await userInfo.find({});
     const totalData = userData.length;
 
@@ -132,13 +255,13 @@ export const getDistributedData = async (req, res) => {
       return res.send({ status: 400, success: false, msg: 'Not enough data to distribute equally' });
     }
 
-    const User = await user.find({});
+    const User = await userInfo.find({});
 
     if (User.length < numUsers) {
       return res.send({ status: 400, success: false, msg: 'Not enough users to distribute data' });
     }
 
-    let userDataIndex = usedData; 
+    let userDataIndex = 0; // Initialize to 0, assuming you want to start from the beginning
     let distributedData = [];
 
     for (let i = 0; i < numUsers; i++) {
@@ -146,24 +269,10 @@ export const getDistributedData = async (req, res) => {
 
       for (let j = 0; j < entriesPerUser; j++) {
         if (userDataIndex < totalData) {
-          userEntries.push({
-            firstname: userData[userDataIndex]._doc.firstname,
-            lastname: userData[userDataIndex]._doc.lastname,
-            Address: userData[userDataIndex]._doc.Address,
-            State: userData[userDataIndex]._doc.State,
-            City: userData[userDataIndex]._doc.City,
-            Homephone: userData[userDataIndex]._doc.Homephone,
-            Email: userData[userDataIndex]._doc.Email,
-            Zip: userData[userDataIndex]._doc.Zip,
-            Dateofbirth: userData[userDataIndex]._doc.Dateofbirth
-          });
-
-          usedDataArray.push(userData[userDataIndex]._doc);
+          userEntries.push(userData[userDataIndex]);
           userDataIndex++;
         }
       }
-
-      usedData += userEntries.length;
 
       distributedData.push({ user: User[i], data: userEntries });
 
@@ -174,41 +283,11 @@ export const getDistributedData = async (req, res) => {
     }
 
     // Calculate unusedData based on usedData from previous distributions
+    let usedData = userDataIndex;
     let unusedData = totalData - usedData;
 
-    for (let i = usedData; i < totalData; i++) {
-      unusedDataArray.push({
-        firstname: userData[i]._doc.firstname,
-        lastname: userData[i]._doc.lastname,
-        Address: userData[i]._doc.Address,
-        State: userData[i]._doc.State,
-        City: userData[i]._doc.City,
-        Homephone: userData[i]._doc.Homephone,
-        Email: userData[i]._doc.Email,
-        Zip: userData[i]._doc.Zip,
-        Dateofbirth: userData[i]._doc.Dateofbirth
-      });
-    }
-
-
-
-    // Save usedDataArray and unusedDataArray to the database
-    const dataDistributedEntry = new DistributedData({
-      usedData: usedDataArray,
-      unusedData: unusedDataArray
-    });
-    await dataDistributedEntry.save();
-
-    const dataDistributed = new DistributedData({
-      usedData,
-      unusedData,
-      usedDataArray, 
-      unusedDataArray
-    });
-    await dataDistributed.save();
-
+    // Save usedData and unusedData to the database
     await userInfo.updateOne({}, { usedData, unusedData });
-
 
     res.send({
       status: 200,
@@ -228,9 +307,6 @@ export const getDistributedData = async (req, res) => {
     res.send({ status: 400, success: false, msg: error.message });
   }
 };
-
-
-
 
 
 
