@@ -62,6 +62,8 @@ var options = {
 
 
 const MONGOURI = process.env.MONGOURI;
+// const MONGOURI= `mongodb://${DB.HOST}:${DB.PORT}/${DB.DATABASE}`
+
 
 console.log(MONGOURI,"MONGOURI")
 

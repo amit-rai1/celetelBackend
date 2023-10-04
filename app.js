@@ -11,6 +11,10 @@ import admin from './route/admin';
 
 import userInfo from './route/userInfo'
 import { mongoconnection } from './db';
+// import getDistributedDataInfo from './route/DistributedData'
+import DistributedData from './route/DistributedData';
+
+
 
 
 const app = express()
@@ -28,8 +32,10 @@ app.use("/api/user",user)
 app.get("/",(req,res)=>{
     res.send("server listining on 9800")
 })
-app.use("/userInfo",userInfo)
+app.use("/userInfo",userInfo);
 app.use('/api/admin', admin);
+
+app.use("/DistributedData",DistributedData)
 
 
 

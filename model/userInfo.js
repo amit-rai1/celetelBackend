@@ -67,6 +67,14 @@ const userSchema = new mongoose.Schema({
     //     required: true
     //   },
 
+    usedData: {
+        type: Number,
+        default: 0
+    },
+    unusedData: {
+        type: Number,
+        default: 0
+    }
 
 
 })

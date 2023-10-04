@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const distributedDataSchema = new mongoose.Schema({
+  // _id: mongoose.Schema.Types.ObjectId,
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   data: [{
     firstname: String,

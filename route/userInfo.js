@@ -6,7 +6,7 @@ import express from 'express';
 
 // import userInfo from '../controller/userInfo';
 
-import { distributeDataToUser, getDistributedData, getDistributedDataInfo, getUserData,getUserDataByUserId,getUserDataDistributed } from '../controller/userInfo';
+import { distributeDataToUser, getDistributedData, getUserData,getUserDataByUserId,getUserDataDistributed } from '../controller/userInfo';
 
 import userInfo from '../controller/userInfo';
 import { verifyToken } from '../middleware/verifyToken';
@@ -45,7 +45,6 @@ router.post('/importUser', upload.single('file'), userInfo);
 router.get('/getUserData', getUserData);
 router.get('/getUserDataDistributed', getUserDataDistributed);
 
-router.get('/getDistributedDataInfo ',verifyToken, getDistributedDataInfo);
 
 
 router.get('/getUserDataByUserId', getUserDataByUserId);
