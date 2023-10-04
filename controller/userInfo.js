@@ -287,7 +287,7 @@ export const getDistributedData = async (req, res) => {
     let unusedData = totalData - usedData;
 
     // Save usedData and unusedData to the database
-    await userInfo.updateOne({}, { usedData, unusedData });
+    await userInfo.updateMany({}, { usedData, unusedData });
 
     res.send({
       status: 200,
