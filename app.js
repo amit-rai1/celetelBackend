@@ -2,18 +2,15 @@
 const express = require('express');
 import  bodyParser  from 'body-parser';
 import cors from 'cors';
-import user from './route/user';
 // const app = require('../app').default;
 
 
-// import adminRoutes from './routeadminRoutes';
-import admin from './route/admin';
 
-import userInfo from './route/userInfo'
+import adminRoute from './route/adminRoute'
 import { mongoconnection } from './db';
-// import getDistributedDataInfo from './route/DistributedData'
-import DistributedData from './route/DistributedData';
-
+// import client from './model/client';
+import client from './route/client'
+import addData from './route/datamodel'
 
 
 
@@ -28,14 +25,13 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json())
 
-app.use("/api/user",user)
+app.use("/api/client",client)
 app.get("/",(req,res)=>{
     res.send("server listining on 9800")
 })
-app.use("/userInfo",userInfo);
-app.use('/api/admin', admin);
+app.use('/api/admin', adminRoute);
+app.use('/api/addData',addData)
 
-app.use("/DistributedData",DistributedData)
 
 
 

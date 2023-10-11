@@ -3,9 +3,9 @@
 import mongoose from 'mongoose';
 
 const adminSchema = new mongoose.Schema({
-  email: {
+  username: {
     type: String,
-    unique: true,
+    // unique: true,
     required: true,
   },
   password: {
@@ -19,6 +19,6 @@ const adminSchema = new mongoose.Schema({
   },
 });
 
-const Admin = mongoose.model('Admin', adminSchema);
+const adminAuth= mongoose.model('adminAuth', adminSchema);
 
-export default Admin;
+export default adminAuth;

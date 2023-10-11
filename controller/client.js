@@ -1,4 +1,4 @@
-import user from '../model/user'
+import client from '../model/client'
 import mongoose from 'mongoose';
 
 import jwt from 'jsonwebtoken';
@@ -27,14 +27,13 @@ export const createUser = async (req, res) => {
   try {
     const generatedPassword = generateRandomPassword(); // Generate an 8-character random password
 
-    const newdata = new user({
+    const newdata = new client({
       first_name: req.body.first_name,
       last_name: req.body.last_name,
-      date_of_joining: req.body.date_of_joining,
-      email: req.body.email,
+      username: req.body.username,
       Phone:req.body.Phone,
       password: bcrypt.hashSync(generatedPassword, 8),
-      role:'user'
+      role:'client'
     })
 
     const result = await newdata.save();
@@ -60,7 +59,7 @@ export const createUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const userData = await user.findOne({ email });
+    const userData = await client.findOne({ email });
     console.log(userData,"userData");
 
     if (!userData) {
@@ -126,7 +125,7 @@ export const getUserList = async (req, res) => {
     const skip = (page - 1) * pageSize;
     const limit = parseInt(pageSize);
 
-    const userList = await user.find(query).skip(skip).limit(limit);
+    const userList = await client.find(query).skip(skip).limit(limit);
 
     res.send({ status: 200, success: true, msz: 'fetch user list successfully', data: userList });
   } catch (error) {
@@ -142,7 +141,7 @@ export const deleteUsers = async (req, res) => {
     console.log(req.body,"req");
 
     // Use deleteMany to delete multiple users based on their IDs
-    const result = await user.deleteMany({ _id: { $in: ids } });
+    const result = await client.deleteMany({ _id: { $in: ids } });
     const updatedUsers = await user.find(); // Fetch the updated list
 
 

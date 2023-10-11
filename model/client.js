@@ -10,13 +10,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
       },
-      date_of_joining: {
-        type: Date,
-        required: true
-      },
+     
       email: {
         type: String,
-        required: true,
+        
+        unique: true
+      },
+      username: {
+        type: String,
+        
         unique: true
       },
       password: {
@@ -30,11 +32,11 @@ const userSchema = new mongoose.Schema({
       role: {
         type: String,
         required: true,
-        enum: ['user'], // Define allowed roles
+        enum: ['client'], // Define allowed roles
       },
     });
     
 
-const user = mongoose.model("user", userSchema);
+const client = mongoose.model("client", userSchema);
 
-export default user;
+export default client;
