@@ -3,8 +3,8 @@
  
  export const addData = async (req, res) => {
   try {
-    const { MSISDN, SIM_Number, IMSI_Number, Circle, Status } = req.body; // Added Status
-    const newData = new datamodel({ MSISDN, SIM_Number, Circle, Status }); // Added Status
+    const { MSISDN, SIM_Number, IMSI_Number, Circle,Operators, Status } = req.body; // Added Status
+    const newData = new datamodel({ MSISDN, SIM_Number, Circle,Operators, Status }); // Added Status
     const data = await newData.save();
     res.send({ message: 'Data added successfully!', data });
   } catch (error) {
