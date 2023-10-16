@@ -30,6 +30,7 @@ export const createUser = async (req, res) => {
     const newdata = new client({
       first_name: req.body.first_name,
       last_name: req.body.last_name,
+      email:req.body.email,
       username: req.body.username,
       Phone:req.body.Phone,
       password: bcrypt.hashSync(generatedPassword, 8),

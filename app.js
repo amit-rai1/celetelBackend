@@ -11,8 +11,9 @@ import { mongoconnection } from './db';
 // import client from './model/client';
 import client from './route/client'
 import addData from './route/datamodel'
+// import { addSenderID } from './controller/senderId';
 
-
+import addSenderID from './route/senderId'
 
 const app = express()
 
@@ -31,6 +32,7 @@ app.get("/",(req,res)=>{
 })
 app.use('/api/admin', adminRoute);
 app.use('/api/addData',addData)
+app.use('/api/',addSenderID);
 
 
 
