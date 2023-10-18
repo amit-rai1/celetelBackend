@@ -8,8 +8,8 @@ const dataSchema = new mongoose.Schema({
   Operators:String,
   Status: {
     type: String,
-    enum: ['active', 'inactive'],
-    default: 'active'
+    enum: ['Active', 'Inactive'],
+    default: 'Active'
   }
 });
 

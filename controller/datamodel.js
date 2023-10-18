@@ -1,5 +1,6 @@
 
 import datamodel from '../model/datamodel'
+const xlsx = require('xlsx');
 
 export const addData = async (req, res) => {
   try {
@@ -15,6 +16,54 @@ export const addData = async (req, res) => {
   }
 };
 
+ export const addExcelData = async (req, res) => {
+  console.log("hit")
+
+
+  try {
+    if (!req.file) {
+      return res.send({ status: 400, success: false, msg: 'No file uploaded' });
+    }
+
+    const filename = req.file.originalname; // Get the filename
+    // const numberOfFiles = req.files.length; // Get the number of files
+    // const numberOfFiles = req.body.numberOfFiles
+
+
+    const workbook = xlsx.readFile(req.file.path);
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const jsonData = xlsx.utils.sheet_to_json(worksheet);
+
+    const userData = jsonData.map(row => ({
+
+      MSISDN: row.MSISDN,
+      SIM_Number: row.SIM_Number,
+      Circle: row.Circle,
+      Operators: row.Operators,
+
+      Status: row.Status,
+    
+
+    }));
+
+    const result = await datamodel.insertMany(userData);
+    const count = await datamodel.countDocuments(); 
+    // const count = userData.length;
+
+    res.send({
+      status: 200,
+      success: true,
+      msg: 'File imported',
+      filename: filename, // Add filename
+      numberOfFiles: count, // Add number of files
+
+      // count:count // Add number of data
+    });
+  } catch (error) {
+    res.send({ status: 400, success: false, msg: error.message, });
+  }
+};
 
 export const getAllData = async (req, res) => {
   try {
@@ -136,15 +185,15 @@ export const deleteData = async (req, res) => {
   try {
     const totalSim = await datamodel.countDocuments();
 
-    const totalActive = await datamodel.countDocuments({ Status: 'active' });
-    const totalInactive = await datamodel.countDocuments({ Status: 'inactive' });
+    const totalActive = await datamodel.countDocuments({ Status: 'Active' });
+    const totalInactive = await datamodel.countDocuments({ Status: 'Inactive' });
 
     const operatorStats = await datamodel.aggregate([
       {
         $group: {
           _id: '$Operators',
-          totalActive: { $sum: { $cond: [{ $eq: ['$Status', 'active'] }, 1, 0] } },
-          totalInactive: { $sum: { $cond: [{ $eq: ['$Status', 'inactive'] }, 1, 0] } }
+          totalActive: { $sum: { $cond: [{ $eq: ['$Status', 'Active'] }, 1, 0] } },
+          totalInactive: { $sum: { $cond: [{ $eq: ['$Status', 'Inactive'] }, 1, 0] } }
         }
       }
     ]);
@@ -152,7 +201,8 @@ export const deleteData = async (req, res) => {
       {
         $group: {
           _id: '$Circle',
-          totalSimByCircle: { $sum: 1 }
+          totalSimByCircle: { $sum: 1 },
+          
         }
       }
     ]);
