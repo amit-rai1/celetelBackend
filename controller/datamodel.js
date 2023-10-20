@@ -65,39 +65,39 @@ export const addData = async (req, res) => {
   }
 };
 
-export const getAllData = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1; // Get the page number from the query parameters, default to 1 if not provided
-    const limit = parseInt(req.query.limit) || 10; // Get the limit from the query parameters, default to 10 if not provided
+// export const getAllData = async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page) || 1; // Get the page number from the query parameters, default to 1 if not provided
+//     const limit = parseInt(req.query.limit) || 10; // Get the limit from the query parameters, default to 10 if not provided
 
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
+//     const startIndex = (page - 1) * limit;
+//     const endIndex = page * limit;
 
-    const totalItems = await datamodel.countDocuments();
+//     const totalItems = await datamodel.countDocuments();
 
-    const allData = await datamodel.find().skip(startIndex).limit(limit);
+//     const allData = await datamodel.find().skip(startIndex).limit(limit);
 
-    // Pagination result
-    const pagination = {};
-    if (endIndex < totalItems) {
-      pagination.next = {
-        page: page + 1,
-        limit: limit
-      };
-    }
+//     // Pagination result
+//     const pagination = {};
+//     if (endIndex < totalItems) {
+//       pagination.next = {
+//         page: page + 1,
+//         limit: limit
+//       };
+//     }
 
-    if (startIndex > 0) {
-      pagination.prev = {
-        page: page - 1,
-        limit: limit
-      };
-    }
+//     if (startIndex > 0) {
+//       pagination.prev = {
+//         page: page - 1,
+//         limit: limit
+//       };
+//     }
 
-    res.send({ data: allData, pagination });
-  } catch (error) {
-    res.status(500).send('An error occurred while fetching data.');
-  }
-};
+//     res.send({ data: allData, pagination });
+//   } catch (error) {
+//     res.status(500).send('An error occurred while fetching data.');
+//   }
+// };
 
 
 
@@ -208,6 +208,88 @@ export const deleteData = async (req, res) => {
     ]);
 
     res.send({totalSim, totalActive, totalInactive,circleStats, operatorStats, status: 200, });
+  } catch (error) {
+    res.status(500).send('An error occurred while fetching data.');
+  }
+};
+
+
+
+// export const getAllData = async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page) || 1; // Get the page number from the query parameters, default to 1 if not provided
+//     const limit = parseInt(req.query.limit) || 10; // Get the limit from the query parameters, default to 10 if not provided
+
+//     const startIndex = (page - 1) * limit;
+//     const endIndex = page * limit;
+
+//     const totalItems = await datamodel.countDocuments();
+
+//     const allData = await datamodel.find().skip(startIndex).limit(limit);
+
+//     // Pagination result
+//     const pagination = {};
+//     if (endIndex < totalItems) {
+//       pagination.next = {
+//         page: page + 1,
+//         limit: limit
+//       };
+//     }
+
+//     if (startIndex > 0) {
+//       pagination.prev = {
+//         page: page - 1,
+//         limit: limit
+//       };
+//     }
+
+//     res.send({ data: allData, pagination });
+//   } catch (error) {
+//     res.status(500).send('An error occurred while fetching data.');
+//   }
+// };
+export const getAllData = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const Circle = req.query.Circle; // Get the circle parameter from the query
+    const Status = req.query.Status; // Get the status parameter from the query
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    let query = {}; // Initialize an empty query object
+
+    // If circle parameter is provided, add it to the query
+    if (Circle) {
+      query.Circle = Circle;
+    }
+
+    // If status parameter is provided, add it to the query
+    if (Status) {
+      query.Status = Status;
+    }
+
+    const totalItems = await datamodel.countDocuments(query);
+
+    const allData = await datamodel.find(query).skip(startIndex).limit(limit);
+
+    const pagination = {};
+    if (endIndex < totalItems) {
+      pagination.next = {
+        page: page + 1,
+        limit: limit
+      };
+    }
+
+    if (startIndex > 0) {
+      pagination.prev = {
+        page: page - 1,
+        limit: limit
+      };
+    }
+
+    res.send({ data: allData, pagination,totalItems  });
   } catch (error) {
     res.status(500).send('An error occurred while fetching data.');
   }
