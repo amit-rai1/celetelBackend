@@ -202,6 +202,8 @@ export const deleteData = async (req, res) => {
         $group: {
           _id: '$Circle',
           totalSimByCircle: { $sum: 1 },
+          totalActive: { $sum: { $cond: [{ $eq: ['$Status', 'Active'] }, 1, 0] } },
+          totalInactive: { $sum: { $cond: [{ $eq: ['$Status', 'Inactive'] }, 1, 0] } }
           
         }
       }
