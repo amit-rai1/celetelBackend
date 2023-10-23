@@ -181,7 +181,47 @@ export const deleteData = async (req, res) => {
 };
 
 
- export const getSimStatistics = async (req, res) => {
+//  export const getSimStatistics = async (req, res) => {
+//   try {
+//     const totalSim = await datamodel.countDocuments();
+
+//     const totalActive = await datamodel.countDocuments({ Status: 'Active' });
+//     const totalInactive = await datamodel.countDocuments({ Status: 'Inactive' });
+//     const circleOperator=await datamodel.find({Operators});
+
+//     const operatorStats = await datamodel.aggregate([
+//       {
+//         $group: {
+//           _id: '$Operators',
+//           totalActive: { $sum: { $cond: [{ $eq: ['$Status', 'Active'] }, 1, 0] } },
+//           totalInactive: { $sum: { $cond: [{ $eq: ['$Status', 'Inactive'] }, 1, 0] } }
+//         }
+//       }
+//     ]);
+//     const circleStats = await datamodel.aggregate([
+//       {
+//         $group: {
+//           _id: '$Circle',
+//           totalSimByCircle: { $sum: 1 },
+//           totalActive: { $sum: { $cond: [{ $eq: ['$Status', 'Active'] }, 1, 0] } },
+//           totalInactive: { $sum: { $cond: [{ $eq: ['$Status', 'Inactive'] }, 1, 0] } }
+//           circleOperator: { $sum: { $cond: [{ $eq: [Operators] }, ] } }
+
+          
+          
+//         }
+//       }
+//     ]);
+
+//     res.send({totalSim, totalActive, totalInactive,circleStats, operatorStats, status: 200, });
+//   } catch (error) {
+//     res.status(500).send('An error occurred while fetching data.');
+//   }
+// };
+
+
+
+export const getSimStatistics = async (req, res) => {
   try {
     const totalSim = await datamodel.countDocuments();
 
@@ -197,24 +237,41 @@ export const deleteData = async (req, res) => {
         }
       }
     ]);
+
     const circleStats = await datamodel.aggregate([
       {
         $group: {
           _id: '$Circle',
           totalSimByCircle: { $sum: 1 },
           totalActive: { $sum: { $cond: [{ $eq: ['$Status', 'Active'] }, 1, 0] } },
-          totalInactive: { $sum: { $cond: [{ $eq: ['$Status', 'Inactive'] }, 1, 0] } }
-          
+          totalInactive: { $sum: { $cond: [{ $eq: ['$Status', 'Inactive'] }, 1, 0] } },
+          operators: { $addToSet: '$Operators' }
         }
       }
     ]);
 
-    res.send({totalSim, totalActive, totalInactive,circleStats, operatorStats, status: 200, });
+    const formattedCircleStats = circleStats.map(stat => {
+      return {
+        Location: stat._id,
+        TotalSim: stat.totalSimByCircle,
+        ActiveSims: stat.totalActive,
+        InactiveSims: stat.totalInactive,
+        Operators: stat.operators.filter(Boolean)
+      };
+    });
+
+    res.send({
+      totalSim,
+      totalActive,
+      totalInactive,
+      circleStats: formattedCircleStats,
+      operatorStats,
+      status: 200
+    });
   } catch (error) {
     res.status(500).send('An error occurred while fetching data.');
   }
 };
-
 
 
 // export const getAllData = async (req, res) => {
