@@ -313,7 +313,7 @@ export const getAllData = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const Circle = req.query.Circle; // Get the circle parameter from the query
     const Status = req.query.Status; // Get the status parameter from the query
-
+    const Operators = req.query.Operators; 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 
@@ -327,6 +327,10 @@ export const getAllData = async (req, res) => {
     // If status parameter is provided, add it to the query
     if (Status) {
       query.Status = Status;
+    }
+
+    if (Operators) {
+      query.Operators = Operators;
     }
 
     const totalItems = await datamodel.countDocuments(query);
