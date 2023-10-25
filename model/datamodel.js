@@ -11,11 +11,11 @@ const dataSchema = new mongoose.Schema({
     enum: ['Active', 'Inactive'],
     default: 'Active'
   },
-  deleted: {
-    type: Boolean,
-    default: false
-  },
-  deletedAt: Date
+  // deleted: {
+  //   type: Boolean,
+  //   default: false
+  // },
+  // deletedAt: Date
 });
 
 const datamodel = mongoose.model('datamodel', dataSchema);
