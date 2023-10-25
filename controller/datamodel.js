@@ -159,14 +159,42 @@ export const updateData = async (req, res) => {
 //     res.status(500).send('An error occurred while deleting data.');
 //   }
 // };
+// export const deleteData = async (req, res) => {
+//   try {
+//     const { ids } = req.body;
+//     console.log(req.body,"req")
+
+//     const deletedData = await datamodel.deleteMany({ _id: { $in: ids } });
+
+//     if (!deletedData || deletedData.deletedCount === 0) {
+//       return res.status(404).send('Data not found');
+//     }
+
+//     res.send({
+//       status: 200,
+//       message: 'Data deleted successfully!',
+//       deletedData
+//     });
+//   } catch (error) {
+//     res.status(500).send('An error occurred while deleting data.');
+//   }
+// };
 export const deleteData = async (req, res) => {
   try {
     const { ids } = req.body;
-    console.log(req.body,"req")
 
-    const deletedData = await datamodel.deleteMany({ _id: { $in: ids } });
+    const deletedData = await datamodel.updateMany(
+      { _id: { $in: ids } },
+      {
+        $set: {
+          deleted: true,
+         
+          deletedAt: new Date()
+        }
+      }
+    );
 
-    if (!deletedData || deletedData.deletedCount === 0) {
+    if (!deletedData || deletedData.nModified === 0) {
       return res.status(404).send('Data not found');
     }
 
@@ -221,14 +249,69 @@ export const deleteData = async (req, res) => {
 
 
 
+// export const getSimStatistics = async (req, res) => {
+//   try {
+//     const totalSim = await datamodel.countDocuments();
+
+//     const totalActive = await datamodel.countDocuments({ Status: 'Active' });
+//     const totalInactive = await datamodel.countDocuments({ Status: 'Inactive' });
+
+//     const operatorStats = await datamodel.aggregate([
+//       {
+//         $group: {
+//           _id: '$Operators',
+//           totalActive: { $sum: { $cond: [{ $eq: ['$Status', 'Active'] }, 1, 0] } },
+//           totalInactive: { $sum: { $cond: [{ $eq: ['$Status', 'Inactive'] }, 1, 0] } }
+//         }
+//       }
+//     ]);
+
+//     const circleStats = await datamodel.aggregate([
+//       {
+//         $group: {
+//           _id: '$Circle',
+//           totalSimByCircle: { $sum: 1 },
+//           totalActive: { $sum: { $cond: [{ $eq: ['$Status', 'Active'] }, 1, 0] } },
+//           totalInactive: { $sum: { $cond: [{ $eq: ['$Status', 'Inactive'] }, 1, 0] } },
+//           operators: { $addToSet: '$Operators' }
+//         }
+//       }
+//     ]);
+
+//     const formattedCircleStats = circleStats.map(stat => {
+//       return {
+//         Location: stat._id,
+//         TotalSim: stat.totalSimByCircle,
+//         ActiveSims: stat.totalActive,
+//         InactiveSims: stat.totalInactive,
+//         Operators: stat.operators.filter(Boolean)
+//       };
+//     });
+
+//     res.send({
+//       totalSim,
+//       totalActive,
+//       totalInactive,
+//       circleStats: formattedCircleStats,
+//       operatorStats,
+//       status: 200
+//     });
+//   } catch (error) {
+//     res.status(500).send('An error occurred while fetching data.');
+//   }
+// };
+
 export const getSimStatistics = async (req, res) => {
   try {
-    const totalSim = await datamodel.countDocuments();
+    const totalSim = await datamodel.countDocuments({ deleted: false });
 
-    const totalActive = await datamodel.countDocuments({ Status: 'Active' });
-    const totalInactive = await datamodel.countDocuments({ Status: 'Inactive' });
+    const totalActive = await datamodel.countDocuments({ Status: 'Active', deleted: false });
+    const totalInactive = await datamodel.countDocuments({ Status: 'Inactive', deleted: false });
 
     const operatorStats = await datamodel.aggregate([
+      {
+        $match: { deleted: false } // Filter out deleted documents
+      },
       {
         $group: {
           _id: '$Operators',
@@ -239,6 +322,9 @@ export const getSimStatistics = async (req, res) => {
     ]);
 
     const circleStats = await datamodel.aggregate([
+      {
+        $match: { deleted: false } // Filter out deleted documents
+      },
       {
         $group: {
           _id: '$Circle',
@@ -273,7 +359,6 @@ export const getSimStatistics = async (req, res) => {
   }
 };
 
-
 // export const getAllData = async (req, res) => {
 //   try {
 //     const page = parseInt(req.query.page) || 1; // Get the page number from the query parameters, default to 1 if not provided
@@ -307,24 +392,72 @@ export const getSimStatistics = async (req, res) => {
 //     res.status(500).send('An error occurred while fetching data.');
 //   }
 // };
+// export const getAllData = async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 10;
+//     const Circle = req.query.Circle; // Get the circle parameter from the query
+//     const Status = req.query.Status; // Get the status parameter from the query
+//     const Operators = req.query.Operators; 
+//     const startIndex = (page - 1) * limit;
+//     const endIndex = page * limit;
+
+//     let query = {}; // Initialize an empty query object
+
+//     // If circle parameter is provided, add it to the query
+//     if (Circle) {
+//       query.Circle = Circle;
+//     }
+
+//     // If status parameter is provided, add it to the query
+//     if (Status) {
+//       query.Status = Status;
+//     }
+
+//     if (Operators) {
+//       query.Operators = Operators;
+//     }
+
+//     const totalItems = await datamodel.countDocuments(query);
+
+//     const allData = await datamodel.find(query).skip(startIndex).limit(limit);
+
+//     const pagination = {};
+//     if (endIndex < totalItems) {
+//       pagination.next = {
+//         page: page + 1,
+//         limit: limit
+//       };
+//     }
+
+//     if (startIndex > 0) {
+//       pagination.prev = {
+//         page: page - 1,
+//         limit: limit
+//       };
+//     }
+
+//     res.send({ data: allData, pagination,totalItems  });
+//   } catch (error) {
+//     res.status(500).send('An error occurred while fetching data.');
+//   }
+// };
 export const getAllData = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const Circle = req.query.Circle; // Get the circle parameter from the query
-    const Status = req.query.Status; // Get the status parameter from the query
+    const Circle = req.query.Circle;
+    const Status = req.query.Status;
     const Operators = req.query.Operators; 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 
-    let query = {}; // Initialize an empty query object
+    let query = { deleted: false }; // Always exclude soft-deleted records
 
-    // If circle parameter is provided, add it to the query
     if (Circle) {
       query.Circle = Circle;
     }
 
-    // If status parameter is provided, add it to the query
     if (Status) {
       query.Status = Status;
     }
@@ -352,7 +485,7 @@ export const getAllData = async (req, res) => {
       };
     }
 
-    res.send({ data: allData, pagination,totalItems  });
+    res.send({ data: allData, pagination, totalItems });
   } catch (error) {
     res.status(500).send('An error occurred while fetching data.');
   }
