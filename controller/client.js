@@ -21,32 +21,72 @@ function generateRandomPassword() {
   return randomPassword;
 }
 
-export const createUser = async (req, res) => {
+// export const createUser = async (req, res) => {
 
+//   console.log("enter");
+//   try {
+//     const generatedPassword = generateRandomPassword(); // Generate an 8-character random password
+
+//     const newdata = new client({
+//       first_name: req.body.first_name,
+//       last_name: req.body.last_name,
+//       email:req.body.email,
+//       username: req.body.username,
+//       Phone:req.body.Phone,
+//       password: bcrypt.hashSync(generatedPassword, 8),
+//       role:'client'
+//     })
+
+//     const result = await newdata.save();
+//     if (result) {
+//       console.log(result,"result");
+//       res.send({
+//         status: true,
+//         statusCode: 200,
+//         message: "Registered Successfully",
+//         result: { 
+//           ...result._doc,
+//           password: generatedPassword
+//         }
+//       });
+//     }
+//   } catch (error) {
+//     throw error;
+//   }
+// }
+
+export const createUser = async (req, res) => {
   console.log("enter");
   try {
-    const generatedPassword = generateRandomPassword(); // Generate an 8-character random password
+    // Check if the request body contains a password
+    if (!req.body.password) {
+      return res.status(400).send({
+        status: false,
+        statusCode: 400,
+        message: "Password is required"
+      });
+    }
 
     const newdata = new client({
       first_name: req.body.first_name,
       last_name: req.body.last_name,
-      email:req.body.email,
+      email: req.body.email,
       username: req.body.username,
-      Phone:req.body.Phone,
-      password: bcrypt.hashSync(generatedPassword, 8),
-      role:'client'
+      Phone: req.body.Phone,
+      password: bcrypt.hashSync(req.body.password, 8), // Hash the provided password
+      role: 'client'
     })
 
     const result = await newdata.save();
     if (result) {
-      console.log(result,"result");
+      console.log(result, "result");
       res.send({
         status: true,
         statusCode: 200,
         message: "Registered Successfully",
-        result: { 
+        result: {
           ...result._doc,
-          password: generatedPassword
+          password: req.body.password // Send the provided password in the response
         }
       });
     }
