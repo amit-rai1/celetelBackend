@@ -1,12 +1,13 @@
 
 import datamodel from '../model/datamodel'
 import moment from 'moment-timezone';
+import PermissionModel from '../model/permission';
 const xlsx = require('xlsx');
 
 export const addData = async (req, res) => {
   try {
-    const { MSISDN, SIM_Number, Circle, Operators, Status } = req.body; // Added Status
-    const newData = new datamodel({ MSISDN, SIM_Number, Circle, Operators, Status }); // Added Status
+    const { MSISDN, SIM_Number,Machine_No, Circle, Operators, Status } = req.body; // Added Status
+    const newData = new datamodel({ MSISDN, SIM_Number,Machine_No, Circle, Operators, Status }); // Added Status
     const data = await newData.save();
     res.send({
       status: 200,
@@ -41,6 +42,7 @@ export const addData = async (req, res) => {
       MSISDN: row.MSISDN,
       SIM_Number: row.SIM_Number,
       Circle: row.Circle,
+      Machine_No:row.Machine_No,
       Operators: row.Operators,
 
       Status: row.Status,
@@ -118,28 +120,89 @@ export const getDataById = async (req, res) => {
 };
 
 
+// export const updateData = async (req, res) => {
+//   try {
+//     const { id } = req.params; // Assuming you're passing the ID in the URL params
+//     const { MSISDN, SIM_Number,Operators , Circle,Status } = req.body;
+
+//     const updatedData = await datamodel.findByIdAndUpdate(id, {
+//       MSISDN,
+//       SIM_Number,
+//       Operators,
+//       Circle,
+//       Status
+//     }, { new: true });
+
+//     if (!updatedData) {
+//       return res.status(404).send('Data not found');
+//     }
+
+//     res.send({ message: 'Data updated successfully!', data: updatedData });
+//   } catch (error) {
+//     res.status(500).send('An error occurred while updating data.');
+//   }
+// };
 export const updateData = async (req, res) => {
   try {
-    const { id } = req.params; // Assuming you're passing the ID in the URL params
-    const { MSISDN, SIM_Number,Operators , Circle,Status } = req.body;
+    const userId = req.user?.userId; // Get logged-in user's ID
+    console.log(userId, 'userId');
 
-    const updatedData = await datamodel.findByIdAndUpdate(id, {
-      MSISDN,
-      SIM_Number,
-      Operators,
-      Circle,
-      Status
-    }, { new: true });
+    const { id } = req.params; // Assuming you're passing the ID in the URL params
+    const { MSISDN, SIM_Number, Operators, Circle, Status } = req.body;
+
+    const userPermissions = await PermissionModel.findOne({ userId });
+
+    // Variable to track who initiated the update
+    let updater = '';
+
+    // If permissions exist and the user is not admin (assuming admin has unrestricted permissions)
+    if (userPermissions && !userPermissions.isAdmin) {
+      updater = 'user'; // If user initiated the update
+
+      const allowedFields = userPermissions.editableFields;
+
+      const newDataFields = { MSISDN, SIM_Number, Operators, Circle, Status };
+      const filteredData = {};
+
+      // Filter the request body to include only allowed fields
+      Object.entries(newDataFields).forEach(([key, value]) => {
+        if (allowedFields.includes(key)) {
+          filteredData[key] = value;
+        }
+      });
+
+      const updatedData = await datamodel.findByIdAndUpdate(
+        id,
+        filteredData,
+        { new: true }
+      );
+
+      if (!updatedData) {
+        return res.status(404).send('Data not found');
+      }
+
+      return res.send({ message: 'Data updated successfully!', data: updatedData, updatedBy: updater });
+    }
+
+    // If the user is admin or has unrestricted permissions
+    updater = 'admin'; // If admin initiated the update
+
+    const updatedData = await datamodel.findByIdAndUpdate(
+      id,
+      { MSISDN, SIM_Number, Operators, Circle, Status },
+      { new: true }
+    );
 
     if (!updatedData) {
       return res.status(404).send('Data not found');
     }
 
-    res.send({ message: 'Data updated successfully!', data: updatedData });
+    res.send({ message: 'Data updated successfully!', data: updatedData, updatedBy: updater });
   } catch (error) {
     res.status(500).send('An error occurred while updating data.');
   }
 };
+
 
 
 // export const deleteData = async (req, res) => {

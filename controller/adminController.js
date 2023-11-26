@@ -6,6 +6,7 @@ import axios from 'axios';
 import user from "../model/client";
 import client from '../model/client';
 import adminAuth from '../model/adminModel';
+import userModel from '../model/userModel';
 
 export const registerAdmin = async (req, res) => {
   console.log("enter");
@@ -45,12 +46,15 @@ export const authLogin = async (req, res) => {
     const {username, password } = req.body;
     const userRecord = await client.findOne({ username });
     const adminRecord = await adminAuth.findOne({ username });
+    const userRec = await userModel.findOne({ username });
+    console.log(userRec,"rec");
 
-    if (!userRecord && !adminRecord) {
+
+    if (!userRecord && !adminRecord && !userRec) {
       throw new Error('User not found');
     }
 
-    const record = userRecord || adminRecord; // Use the record that exists
+    const record = userRecord || adminRecord || userRec; // Use the record that exists
 
     const passwordMatch = await bcrypt.compare(password, record.password);
 
@@ -78,6 +82,5 @@ export const authLogin = async (req, res) => {
     res.send({ status: 400, success: false, msg: error.message });
   }
 };
-
 
 

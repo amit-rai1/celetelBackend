@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { addData, getAllData, getDataById, updateData, deleteData, getSimStatistics,addExcelData } = require('../controller/datamodel');
+const { verifyToken } = require('../middleware/verifyToken');
+
 const datamodel = require('../model/datamodel');
 const multer = require('multer');
 const path =require('path');
@@ -11,7 +13,9 @@ const path =require('path');
 router.post('/addData',addData)
 router.get('/getAllData',getAllData)
 router.get('/getDataById/:id',getDataById)
-router.put('/updateData/:id',updateData)
+// router.put('/updateData/:id',updateData)
+router.put('/updateData/:id', verifyToken, updateData);
+
 router.delete('/deleteData',deleteData)
 router.get('/getSimStatistics', getSimStatistics)
 const dirname = path.resolve(); // Add this line to define __dirname

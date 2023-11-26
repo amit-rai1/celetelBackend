@@ -4,6 +4,7 @@ const dataSchema = new mongoose.Schema({
   MSISDN: String,
   SIM_Number: String,
   Circle: String,
+  Machine_No:String,
   Operators: String,
   Status: {
     type: String,
