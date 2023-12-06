@@ -10,11 +10,11 @@ const userSchema = new mongoose.Schema({
 
   first_name: {
     type: String,
-    required: true
+    // required: true
   },
   last_name: {
     type: String,
-    required: true
+    // required: true
   },
 
   // email: {
@@ -31,11 +31,11 @@ const userSchema = new mongoose.Schema({
   },
   Phone: {
     type: String,
-    required: true
+    // required: true
   },
   role: {
     type: String,
-    required: true,
+    // required: true,
     enum: ['user'], // Define allowed roles
   },
 
