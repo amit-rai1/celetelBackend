@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 
 import jwt from 'jsonwebtoken';
 
-
 import bcrypt, { compareSync } from "bcrypt"
 import crypto from 'crypto';
 import userModel from '../model/userModel';
@@ -11,6 +10,9 @@ import userModel from '../model/userModel';
 
 export const createUsers = async (req, res) => {
     console.log("enter");
+    console.log("req",req);
+    console.log("res",res);
+
     try {
       // Check if the request body contains a password
       if (!req.body.password) {

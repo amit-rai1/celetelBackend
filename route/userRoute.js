@@ -14,8 +14,8 @@ const router = express.Router();
 //  router.post('/Login',Login);
 //  router.post("/updateUser", updateUser);
 
-router.post('/createUsers',createUsers);
-router.get('/userList', getUserList); // Protected route (admin-only)
+router.post('/createUsers', isAdmin,createUsers);
+router.get('/userList', isAdmin, getUserList); // Protected route (admin-only)
 
 // router.post('/loginUser',loginUser)
 // router.get('/getUserList',getUserList)
