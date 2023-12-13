@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const dataSchema = new mongoose.Schema({
+  SL_NO:String,
   MSISDN: String,
   SIM_Number: String,
   Circle: String,

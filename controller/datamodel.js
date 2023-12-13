@@ -6,9 +6,10 @@ const xlsx = require('xlsx');
 
 export const addData = async (req, res) => {
   try {
-    const { MSISDN, SIM_Number,Machine_No, Circle, Operators, Status } = req.body; // Added Status
-    const newData = new datamodel({ MSISDN, SIM_Number,Machine_No, Circle, Operators, Status }); // Added Status
+    const {SL_NO, MSISDN, SIM_Number,Machine_No, Circle, Operators, Status } = req.body; // Added Status
+    const newData = new datamodel({SL_NO, MSISDN, SIM_Number,Machine_No, Circle, Operators, Status }); // Added Status
     const data = await newData.save();
+    console.log(data,"data1")
     res.send({
       status: 200,
       message: 'Data added successfully!', data
@@ -38,7 +39,7 @@ export const addData = async (req, res) => {
     const jsonData = xlsx.utils.sheet_to_json(worksheet);
 
     const userData = jsonData.map(row => ({
-
+      SL_NO:row.SL_NO,
       MSISDN: row.MSISDN,
       SIM_Number: row.SIM_Number,
       Circle: row.Circle,
@@ -148,7 +149,7 @@ export const updateData = async (req, res) => {
     console.log(userId, 'userId');
 
     const { id } = req.params; // Assuming you're passing the ID in the URL params
-    const { MSISDN, SIM_Number, Operators, Circle, Status } = req.body;
+    const {SL_NO, MSISDN, SIM_Number, Operators, Circle, Status } = req.body;
 
     const userPermissions = await PermissionModel.findOne({ userId });
 
@@ -161,7 +162,7 @@ export const updateData = async (req, res) => {
 
       const allowedFields = userPermissions.editableFields;
 
-      const newDataFields = { MSISDN, SIM_Number, Operators, Circle, Status };
+      const newDataFields = {SL_NO, MSISDN, SIM_Number, Operators, Circle, Status };
       const filteredData = {};
 
       // Filter the request body to include only allowed fields
@@ -189,7 +190,7 @@ export const updateData = async (req, res) => {
 
     const updatedData = await datamodel.findByIdAndUpdate(
       id,
-      { MSISDN, SIM_Number, Operators, Circle, Status },
+      {SL_NO, MSISDN, SIM_Number, Operators, Circle, Status },
       { new: true }
     );
 
@@ -514,6 +515,8 @@ export const getAllData = async (req, res) => {
     const Circle = req.query.Circle;
     const Status = req.query.Status;
     const Operators = req.query.Operators; 
+    const { MSISDN} = req.query;
+
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 
@@ -549,7 +552,21 @@ export const getAllData = async (req, res) => {
         limit: limit
       };
     }
+    if (MSISDN) {
+      query.MSISDN = MSISDN;
+  }
 
+//   if (SIM_Number) {
+//       query.SIM_Number = SIM_Number;
+//   }
+
+//   if (Machine_No) {
+//     query.Machine_No = Machine_No;
+// }
+
+// if (SL_NO){
+//   query.SL_NO=SL_NO;
+// }
     res.send({ data: allData, pagination, totalItems });
   } catch (error) {
     res.status(500).send('An error occurred while fetching data.');
