@@ -515,10 +515,11 @@ export const getAllData = async (req, res) => {
     const Circle = req.query.Circle;
     const Status = req.query.Status;
     const Operators = req.query.Operators; 
-    const { MSISDN} = req.query;
 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
+    const { name } = req.query;
+
 
     let query = { deleted: false }; // Always exclude soft-deleted records
 
@@ -533,7 +534,9 @@ export const getAllData = async (req, res) => {
     if (Operators) {
       query.Operators = Operators;
     }
-
+    if (name) {
+      query = { $or: [{ MSISDN: new RegExp(name, 'i') }, { SIM_Number: new RegExp(name, 'i') }] };
+    }
     const totalItems = await datamodel.countDocuments(query);
 
     const allData = await datamodel.find(query).skip(startIndex).limit(limit);
@@ -552,21 +555,9 @@ export const getAllData = async (req, res) => {
         limit: limit
       };
     }
-    if (MSISDN) {
-      query.MSISDN = MSISDN;
-  }
+   
 
-//   if (SIM_Number) {
-//       query.SIM_Number = SIM_Number;
-//   }
 
-//   if (Machine_No) {
-//     query.Machine_No = Machine_No;
-// }
-
-// if (SL_NO){
-//   query.SL_NO=SL_NO;
-// }
     res.send({ data: allData, pagination, totalItems });
   } catch (error) {
     res.status(500).send('An error occurred while fetching data.');
