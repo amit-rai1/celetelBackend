@@ -508,6 +508,61 @@ export const getSimStatistics = async (req, res) => {
 //     res.status(500).send('An error occurred while fetching data.');
 //   }
 // };
+// export const getAllData = async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 10;
+//     const Circle = req.query.Circle;
+//     const Status = req.query.Status;
+//     const Operators = req.query.Operators; 
+
+//     const startIndex = (page - 1) * limit;
+//     const endIndex = page * limit;
+//     const { name } = req.query;
+
+
+//     let query = { deleted: false }; // Always exclude soft-deleted records
+
+//     if (Circle) {
+//       query.Circle = Circle;
+//     }
+
+//     if (Status) {
+//       query.Status = Status;
+//     }
+
+//     if (Operators) {
+//       query.Operators = Operators;
+//     }
+//     if (name) {
+//       query = { $or: [{ MSISDN: new RegExp(name, 'i') }, { SIM_Number: new RegExp(name, 'i') }] };
+//     }
+//     const totalItems = await datamodel.countDocuments(query);
+
+//     const allData = await datamodel.find(query).skip(startIndex).limit(limit);
+
+//     const pagination = {};
+//     if (endIndex < totalItems) {
+//       pagination.next = {
+//         page: page + 1,
+//         limit: limit
+//       };
+//     }
+
+//     if (startIndex > 0) {
+//       pagination.prev = {
+//         page: page - 1,
+//         limit: limit
+//       };
+//     }
+   
+
+
+//     res.send({ data: allData, pagination, totalItems });
+//   } catch (error) {
+//     res.status(500).send('An error occurred while fetching data.');
+//   }
+// };
 export const getAllData = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -515,11 +570,9 @@ export const getAllData = async (req, res) => {
     const Circle = req.query.Circle;
     const Status = req.query.Status;
     const Operators = req.query.Operators; 
-
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
     const { name } = req.query;
-
 
     let query = { deleted: false }; // Always exclude soft-deleted records
 
@@ -534,32 +587,30 @@ export const getAllData = async (req, res) => {
     if (Operators) {
       query.Operators = Operators;
     }
-    if (name) {
-      query = { $or: [{ MSISDN: new RegExp(name, 'i') }, { SIM_Number: new RegExp(name, 'i') }] };
-    }
-    const totalItems = await datamodel.countDocuments(query);
 
+    if (name) {
+      // Append search criteria using $or operator to the existing query
+      query.$or = [
+        { MSISDN: new RegExp(name, 'i') },
+        { SIM_Number: new RegExp(name, 'i') }
+      ];
+    }
+
+    const totalItems = await datamodel.countDocuments(query);
     const allData = await datamodel.find(query).skip(startIndex).limit(limit);
 
     const pagination = {};
     if (endIndex < totalItems) {
-      pagination.next = {
-        page: page + 1,
-        limit: limit
-      };
+      pagination.next = { page: page + 1, limit };
     }
 
     if (startIndex > 0) {
-      pagination.prev = {
-        page: page - 1,
-        limit: limit
-      };
+      pagination.prev = { page: page - 1, limit };
     }
-   
-
 
     res.send({ data: allData, pagination, totalItems });
   } catch (error) {
+    // console.log(error,"error")
     res.status(500).send('An error occurred while fetching data.');
   }
 };
