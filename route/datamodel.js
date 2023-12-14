@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { addData, getAllData, getDataById, updateData, deleteData, getSimStatistics,addExcelData } = require('../controller/datamodel');
+const { addData, getAllData, getDataById, updateData, deleteData, getSimStatistics,addExcelData, searchData } = require('../controller/datamodel');
 const { verifyToken } = require('../middleware/verifyToken');
 
 const datamodel = require('../model/datamodel');
@@ -18,6 +18,8 @@ router.put('/updateData/:id', verifyToken, updateData);
 
 router.delete('/deleteData',deleteData)
 router.get('/getSimStatistics', getSimStatistics)
+router.get('/search', searchData);
+
 const dirname = path.resolve(); // Add this line to define __dirname
 const bodyParser=require('body-parser');
 

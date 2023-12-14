@@ -575,3 +575,33 @@ export const getAllData = async (req, res) => {
     res.status(500).send('An error occurred while fetching data.');
   }
 };
+
+
+
+export const searchData = async (req, res) => {
+  try {
+    const searchTerm = req.query.searchTerm;
+
+    let query = { deleted: false }; // Exclude soft-deleted records
+
+    let regexQuery = {}; // Initialize regex query
+
+    if (searchTerm) {
+      regexQuery = {
+        $or: [
+          { MSISDN: { $regex: searchTerm, $options: 'i' } },
+          { SIM_Number: { $regex: searchTerm, $options: 'i' } },
+        ],
+      };
+      query = { ...query, ...regexQuery };
+    }
+
+    const sortCriteria = { MSISDN: 1 }; // Sort by MSISDN in ascending order
+    const allData = await datamodel.find(query).sort(sortCriteria);
+
+    res.send({ data: allData });
+  } catch (error) {
+    res.status(500).send('An error occurred while fetching data.');
+  }
+};
+
