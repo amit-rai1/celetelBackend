@@ -581,6 +581,8 @@ export const getAllData = async (req, res) => {
 export const searchData = async (req, res) => {
   try {
     const searchTerm = req.query.searchTerm;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
 
     let query = { deleted: false }; // Exclude soft-deleted records
 
@@ -596,10 +598,34 @@ export const searchData = async (req, res) => {
       query = { ...query, ...regexQuery };
     }
 
-    const sortCriteria = { MSISDN: 1 }; // Sort by MSISDN in ascending order
-    const allData = await datamodel.find(query).sort(sortCriteria);
+    const totalItems = await datamodel.countDocuments(query);
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
 
-    res.send({ data: allData });
+    const sortCriteria = { MSISDN: 1 }; // Sort by MSISDN in ascending order
+
+    const allData = await datamodel
+      .find(query)
+      .sort(sortCriteria)
+      .skip(startIndex)
+      .limit(limit);
+
+    const pagination = {};
+    if (endIndex < totalItems) {
+      pagination.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+
+    if (startIndex > 0) {
+      pagination.prev = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+
+    res.send({ data: allData, pagination, totalItems });
   } catch (error) {
     res.status(500).send('An error occurred while fetching data.');
   }
