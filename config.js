@@ -8,6 +8,11 @@ const config = {
             UserName: "",
             Password: ""
         },
+
+        email: {
+            username: "amit.rai@celetel.com",
+            password: "Amr#1324"
+        },
         PORTNO : 7600,
        
     },
@@ -24,7 +29,10 @@ const config = {
             UserName: "celetel",
             Password: "Dun3cC38Ah@Vg$T"
         },
-        
+        email: {
+            username: "amit.rai@celetel.com",
+            password: "Amr#1324"
+        },
             
         PORTNO : 7600,
         

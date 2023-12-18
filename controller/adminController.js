@@ -7,6 +7,7 @@ import user from "../model/client";
 import client from '../model/client';
 import adminAuth from '../model/adminModel';
 import userModel from '../model/userModel';
+import subUserModel from '../model/subuserModel';
 
 export const registerAdmin = async (req, res) => {
   console.log("enter");
@@ -47,14 +48,15 @@ export const authLogin = async (req, res) => {
     const userRecord = await client.findOne({ username });
     const adminRecord = await adminAuth.findOne({ username });
     const userRec = await userModel.findOne({ username });
+    const subuserRec = await subUserModel.findOne({ username });
     console.log(userRec,"rec");
 
 
-    if (!userRecord && !adminRecord && !userRec) {
+    if (!userRecord && !adminRecord && !userRec &&!subuserRec) {
       throw new Error('User not found');
     }
 
-    const record = userRecord || adminRecord || userRec; // Use the record that exists
+    const record = userRecord || adminRecord || userRec || subuserRec ; // Use the record that exists
 
     const passwordMatch = await bcrypt.compare(password, record.password);
 
