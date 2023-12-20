@@ -28,6 +28,7 @@ export const createUsers = async (req, res) => {
         last_name: req.body.last_name,
         username: req.body.username,
         Phone: req.body.Phone,
+        email:req.body.email,
         password: bcrypt.hashSync(req.body.password, 8), // Hash the provided password
         role: 'user'
       })

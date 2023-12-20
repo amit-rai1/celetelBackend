@@ -2,10 +2,11 @@ import client from '../model/client'
 import mongoose from 'mongoose';
 
 import jwt from 'jsonwebtoken';
-
+// import { userSchema } from '../validation/userValidation';
 
 import bcrypt, { compareSync } from "bcrypt"
 import crypto from 'crypto';
+import { adduserSchema } from '../validation/userValidation';
 
 
 
@@ -58,15 +59,6 @@ function generateRandomPassword() {
 export const createUser = async (req, res) => {
   console.log("enter");
   try {
-    // Check if the request body contains a password
-    if (!req.body.password) {
-      return res.status(400).send({
-        status: false,
-        statusCode: 400,
-        message: "Password is required"
-      });
-    }
-
     const newdata = new client({
       first_name: req.body.first_name,
       last_name: req.body.last_name,
