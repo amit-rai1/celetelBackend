@@ -10,11 +10,8 @@ import userModel from '../model/userModel';
 import subUserModel from '../model/subuserModel';
 
 export const registerAdmin = async (req, res) => {
-  console.log("enter");
   try {
     const { username, password, role } = req.body;
-
-    console.log(req.body, "req.body");
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -49,7 +46,7 @@ export const authLogin = async (req, res) => {
     const adminRecord = await adminAuth.findOne({ username });
     const userRec = await userModel.findOne({ username });
     const subuserRec = await subUserModel.findOne({ username });
-    console.log(userRec,"rec");
+    
 
 
     if (!userRecord && !adminRecord && !userRec &&!subuserRec) {
@@ -70,7 +67,6 @@ export const authLogin = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    console.log('Role:', record.role); // Output the role to the console
 
     res.send({
       status: 200,

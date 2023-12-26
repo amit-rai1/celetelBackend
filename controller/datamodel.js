@@ -367,6 +367,68 @@ export const deleteData = async (req, res) => {
 //   }
 // };
 
+// export const getSimStatistics = async (req, res) => {
+//   try {
+//     const totalSim = await datamodel.countDocuments({ deleted: false });
+
+//     const totalActive = await datamodel.countDocuments({ Status: 'Active', deleted: false });
+//     const totalInactive = await datamodel.countDocuments({ Status: 'Inactive', deleted: false });
+
+//     const operatorStats = await datamodel.aggregate([
+//       {
+//         $match: { deleted: false } // Filter out deleted documents
+//       },
+//       {
+//         $group: {
+//           _id: '$Operators',
+//           totalActive: { $sum: { $cond: [{ $eq: ['$Status', 'Active'] }, 1, 0] } },
+//           totalInactive: { $sum: { $cond: [{ $eq: ['$Status', 'Inactive'] }, 1, 0] } }
+//         }
+//       }
+//     ]);
+
+//     const circleStats = await datamodel.aggregate([
+//       {
+//         $match: { deleted: false } // Filter out deleted documents
+//       },
+//       {
+//         $group: {
+//           _id: '$Circle',
+//           totalSimByCircle: { $sum: 1 },
+//           totalActive: { $sum: { $cond: [{ $eq: ['$Status', 'Active'] }, 1, 0] } },
+//           totalInactive: { $sum: { $cond: [{ $eq: ['$Status', 'Inactive'] }, 1, 0] } },
+//           operators: { $addToSet: '$Operators' }
+//         }
+//       }
+//     ]);
+
+//     const formattedCircleStats = circleStats.map(stat => {
+//       return {
+//         Location: stat._id,
+//         TotalSim: stat.totalSimByCircle,
+//         ActiveSims: stat.totalActive,
+//         InactiveSims: stat.totalInactive,
+//         Operators: stat.operators.filter(Boolean)
+//       };
+//     });
+
+//     res.send({
+//       totalSim,
+//       totalActive,
+//       totalInactive,
+//       circleStats: formattedCircleStats,
+//       operatorStats,
+//       status: 200
+//     });
+//   } catch (error) {
+//     res.status(500).send('An error occurred while fetching data.');
+//   }
+// };
+
+
+//add new logic 26/12/2023
+
+
 export const getSimStatistics = async (req, res) => {
   try {
     const totalSim = await datamodel.countDocuments({ deleted: false });
@@ -393,11 +455,26 @@ export const getSimStatistics = async (req, res) => {
       },
       {
         $group: {
-          _id: '$Circle',
+          _id: { Circle: '$Circle', Operators: '$Operators' },
           totalSimByCircle: { $sum: 1 },
           totalActive: { $sum: { $cond: [{ $eq: ['$Status', 'Active'] }, 1, 0] } },
-          totalInactive: { $sum: { $cond: [{ $eq: ['$Status', 'Inactive'] }, 1, 0] } },
-          operators: { $addToSet: '$Operators' }
+          totalInactive: { $sum: { $cond: [{ $eq: ['$Status', 'Inactive'] }, 1, 0] } }
+        }
+      },
+      {
+        $group: {
+          _id: '$_id.Circle',
+          operators: {
+            $addToSet: {
+              name: '$_id.Operators',
+              totalSimCount: '$totalSimByCircle',
+              activeSimCount: '$totalActive',
+              inactiveSimCount: '$totalInactive'
+            }
+          },
+          TotalSim: { $sum: '$totalSimByCircle' },
+          ActiveSims: { $sum: '$totalActive' },
+          InactiveSims: { $sum: '$totalInactive' }
         }
       }
     ]);
@@ -405,10 +482,10 @@ export const getSimStatistics = async (req, res) => {
     const formattedCircleStats = circleStats.map(stat => {
       return {
         Location: stat._id,
-        TotalSim: stat.totalSimByCircle,
-        ActiveSims: stat.totalActive,
-        InactiveSims: stat.totalInactive,
-        Operators: stat.operators.filter(Boolean)
+        TotalSim: stat.TotalSim,
+        ActiveSims: stat.ActiveSims,
+        InactiveSims: stat.InactiveSims,
+        Operators: stat.operators
       };
     });
 
@@ -424,6 +501,8 @@ export const getSimStatistics = async (req, res) => {
     res.status(500).send('An error occurred while fetching data.');
   }
 };
+
+
 
 // export const getAllData = async (req, res) => {
 //   try {
