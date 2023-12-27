@@ -57,7 +57,6 @@ function generateRandomPassword() {
 // }
 
 export const createUser = async (req, res) => {
-  console.log("enter");
   try {
     const newdata = new client({
       first_name: req.body.first_name,

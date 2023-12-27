@@ -119,3 +119,25 @@ export const updateUserById = async (req, res) => {
     res.status(500).send('An error occurred while updating the user');
   }
 };
+export const deleteUser = async (req, res) => {
+  console.log("enter");
+  try {
+    const { ids } = req.body;
+
+    console.log(req.body,"iddd");
+
+    const deletedData = await userModel.deleteMany({ _id: { $in: ids } });
+
+    if (!deletedData || deletedData.deletedCount === 0) {
+      return res.status(404).send('Data not found');
+    }
+
+    res.send({
+      status: 200,
+      message: 'Data deleted successfully!',
+      deletedData
+    });
+  } catch (error) {
+    res.status(500).send('An error occurred while deleting data.');
+  }
+};
